@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Wisdom</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6B73FF 0%, #000DFF 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            padding: 20px 0;
+        }
+
+        .category-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+
+        .category-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .category-btn.active {
+            background: white;
+            color: #6B73FF;
+        }
+
+        .quote-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .quote-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .quote-text {
+            font-size: 24px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .quote-text::before {
+            content: '"';
+            font-size: 60px;
+            color: #6B73FF;
+            position: absolute;
+            left: -20px;
+            top: -20px;
+        }
+
+        .quote-author {
+            font-style: italic;
+            color: #666;
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        .quote-category {
+            display: inline-block;
+            padding: 5px 15px;
+            background: #6B73FF;
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .btn-primary {
+            background: #6B73FF;
+        }
+
+        .btn-secondary {
+            background: #FF6B6B;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .favorites-section {
+            margin-top: 40px;
+        }
+
+        .favorites-list {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .favorite-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .favorite-item:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+
+            .quote-text {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Daily Wisdom</h1>
+            <p>Your daily dose of motivation</p>
+        </header>
+
+        <div class="category-filters" id="categoryFilters">
+            <!-- Categories will be populated here -->
+        </div>
+
+        <div class="quote-card">
+            <p class="quote-text" id="quoteText"></p>
+            <p class="quote-author" id="quoteAuthor"></p>
+            <span class="quote-category" id="quoteCategory"></span>
+            
+            <div class="controls">
+                <button class="btn btn-primary" id="newQuoteBtn">New Quote</button>
+                <button class="btn btn-secondary" id="favoriteBtn">❤ Save</button>
+            </div>
+        </div>
+
+        <div class="favorites-section">
+            <h2 style="color: white;">Your Favorite Quotes</h2>
+            <div class="favorites-list" id="favoritesList"></div>
+        </div>
+    </div>
+
+    <script>
+        const quotes = [
+            {
+                text: "The only way to do great work is to love what you do.",
+                author: "Steve Jobs",
+                category: "Success"
+            },
+            {
+                text: "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+                author: "Winston Churchill",
+                category: "Perseverance"
+            },
+            {
+                text: "The future belongs to those who believe in the beauty of their dreams.",
+                author: "Eleanor Roosevelt",
+                category: "Dreams"
+            },
+            {
+                text: "Your time is limited, don't waste it living someone else's life.",
+                author: "Steve Jobs",
+                category: "Life"
+            },
+            {
+                text: "The best way to predict the future is to create it.",
+                author: "Peter Drucker",
+                category: "Success"
+            },
+            {
+                text: "Everything you've ever wanted is sitting on the other side of fear.",
+                author: "George Addair",
+                category: "Fear"
+            },
+            {
+                text: "Be the change you wish to see in the world.",
+                author: "Mahatma Gandhi",
+                category: "Inspiration"
+            },
+            {
+                text: "In the middle of difficulty lies opportunity.",
+                author: "Albert Einstein",
+                category: "Perseverance"
+            },
+            {
+                text: "The journey of a thousand miles begins with one step.",
+                author: "Lao Tzu",
+                category: "Beginning"
+            },
+            {
+                text: "What you get by achieving your goals is not as important as what you become by achieving your goals.",
+                author: "Zig Ziglar",
+                category: "Growth"
+            },
+            {
+                text: "The future depends on what you do today.",
+                author: "Mahatma Gandhi",
+                category: "Action"
+            },
+            {
+                text: "So remember ME; I will remember you. And be grateful to ME and do not deny ME.",
+                author: "(Quran 2:152)",
+                category: "Al-Quran"
+            },
+            {
+                text: "And He found you lost and guided [you].",
+                author: "(Quran 93:7)",
+                category: "Al-Quran"
+            },
+            {
+                text: "Indeed, with hardship [will be] ease.",
+                author: "(Quran 94:6)",
+                category: "Al-Quran"
+            },
+            {
+                text: "And He is the Forgiving, the Loving",
+                author: "(Quran 85:14)",
+                category: "Al-Quran"
+            },
+            {
+                text: "Do not despair of the mercy of Allāh. Indeed, Allāh forgives all sins. Indeed, it is He who is the Forgiving, the Merciful.",
+                author: "(Quran 39:53)",
+                category: "Al-Quran"
+            }
+        ];
+
+        let currentQuote = null;
+        let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+        let selectedCategory = null;
+
+        function setupCategoryFilters() {
+            const categories = [...new Set(quotes.map(quote => quote.category))].sort();
+            const filtersContainer = document.getElementById('categoryFilters');
+            
+            filtersContainer.innerHTML = `
+                <button class="category-btn active" data-category="all">All</button>
+                ${categories.map(category => 
+                    `<button class="category-btn" data-category="${category}">${category}</button>`
+                ).join('')}
+            `;
+
+            filtersContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('category-btn')) {
+                    document.querySelectorAll('.category-btn').forEach(btn => 
+                        btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    selectedCategory = e.target.dataset.category;
+                    if (selectedCategory === 'all') selectedCategory = null;
+                    showNewQuote();
+                }
+            });
+        }
+
+        function getRandomQuote() {
+            let availableQuotes = quotes;
+            if (selectedCategory) {
+                availableQuotes = quotes.filter(quote => 
+                    quote.category === selectedCategory);
+            }
+            return availableQuotes[Math.floor(Math.random() * availableQuotes.length)];
+        }
+
+        function showNewQuote() {
+            currentQuote = getRandomQuote();
+            if (currentQuote) {
+                document.getElementById('quoteText').textContent = currentQuote.text;
+                document.getElementById('quoteAuthor').textContent = `- ${currentQuote.author}`;
+                document.getElementById('quoteCategory').textContent = currentQuote.category;
+                
+                const isFavorite = favorites.some(q => q.text === currentQuote.text);
+                document.getElementById('favoriteBtn').textContent = isFavorite ? '❤ Saved' : '❤ Save';
+            }
+        }
+
+        function toggleFavorite() {
+            if (!currentQuote) return;
+            
+            const index = favorites.findIndex(q => q.text === currentQuote.text);
+            if (index === -1) {
+                favorites.push(currentQuote);
+                document.getElementById('favoriteBtn').textContent = '❤ Saved';
+            } else {
+                favorites.splice(index, 1);
+                document.getElementById('favoriteBtn').textContent = '❤ Save';
+            }
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            renderFavorites();
+        }
+
+        function renderFavorites() {
+            const favoritesList = document.getElementById('favoritesList');
+            if (favorites.length === 0) {
+                favoritesList.innerHTML = '<p style="text-align: center; color: #666;">No favorite quotes yet</p>';
+                return;
+            }
+            favoritesList.innerHTML = favorites.map(quote => `
+                <div class="favorite-item">
+                    <p style="font-size: 16px; margin-bottom: 5px;">${quote.text}</p>
+                    <p style="color: #666; font-style: italic;">- ${quote.author}</p>
+                    <span class="quote-category" style="font-size: 12px;">${quote.category}</span>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('newQuoteBtn').addEventListener('click', showNewQuote);
+        document.getElementById('favoriteBtn').addEventListener('click', toggleFavorite);
+
+        // Initialize the app
+        window.onload = function() {
+            setupCategoryFilters();
+            showNewQuote();
+            renderFavorites();
+        };
+    </script>
+</body>
+</html>
